@@ -1,15 +1,16 @@
 {
     "builds": [
-      {
-        "src": "my_linebot.py",
-        "use": "@vercel/python"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "my_linebot.py"
-      }
-    ]
+        {
+          "src": "my_linebot.py",
+          "use": "@vercel/python",
+          "config": { "maxLambdaSize": "15mb", "runtime": "python3.8" }
+        }
+      ],
+      "routes": [
+        {
+          "src": "/(.*)",
+          "dest": "my_linebot.py"
+        }
+      ]
   }
   

@@ -1,0 +1,15 @@
+{
+    "builds": [
+      {
+        "src": "my_linebot.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "my_linebot.py"
+      }
+    ]
+  }
+  

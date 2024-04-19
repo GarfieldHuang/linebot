@@ -71,8 +71,7 @@ def aoai_chat_model(chat):
                 "content": recent_messages,
             }
         ],
-        max_tokens=150,
-        temperature=0.7,
+        temperature=0.7
     )
 
     # Append the assistant's response to the messages list

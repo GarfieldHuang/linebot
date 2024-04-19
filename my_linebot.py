@@ -1,18 +1,36 @@
 # my_linebot.py
+# Create a new virtual environment
+# python -m venv env
+
+# Activate the virtual environment
+# env\Scripts\activate
+# cd .\linebot_aoai\
+# python my_linebot.py
 
 from flask import Flask, request, abort
 import os
-import openai
+# import openai
+from openai import OpenAI
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
+# import pkg_resources
 
+# openai_version = pkg_resources.get_distribution("openai").version
+# print(openai_version)
 # Set OpenAI API details
-openai.api_type = "azure"
-openai.api_version = "2024-02-01"
-openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_base = os.getenv("OPENAI_API_BASE")
+# openai.api_type = "azure"
+# openai.api_version = "2024-02-01"
+# openai.api_key = os.getenv("OPENAI_API_KEY")
+# openai.api_base = os.getenv("OPENAI_API_BASE")
 
+client = OpenAI(
+    # This is the default and can be omitted
+    organization = "azure",
+    #api_version = "2024-02-01",
+    api_key = os.getenv("OPENAI_API_KEY"),
+    base_url = os.getenv("OPENAI_API_BASE")
+)
 app = Flask(__name__)
 
 # Initialize messages list with the system message
@@ -31,15 +49,30 @@ def aoai_chat_model(chat):
     recent_messages = messages[-5:]
 
     # Send the recent messages to the OpenAI API and get the response
-    response_chat = openai.ChatCompletion.create(
-        engine="gpt-4",
-        messages=recent_messages,
-        temperature=0.7,
+    # response_chat = openai.ChatCompletion.create(
+    #     engine="gpt-4",
+    #     messages=recent_messages,
+    #     temperature=0.7,
+    #     max_tokens=150,
+    #     top_p=0.95,
+    #     frequency_penalty=0,
+    #     presence_penalty=0,
+    #     stop=None
+    # )
+    response_chat = client.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a helpful assistant. Refrain from responding in simplified Chinese, you will respond in traditional Chinese at all time."
+            },
+            {
+                "role": "user",
+                "content": recent_messages,
+            }
+        ],
         max_tokens=150,
-        top_p=0.95,
-        frequency_penalty=0,
-        presence_penalty=0,
-        stop=None
+        temperature=0.7,
     )
 
     # Append the assistant's response to the messages list

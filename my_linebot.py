@@ -10,11 +10,12 @@
 from flask import Flask, request, abort
 import os
 # import openai
-from openai import OpenAI
+# from openai import OpenAI
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 # import pkg_resources
+from openai import AzureOpenAI
 
 # openai_version = pkg_resources.get_distribution("openai").version
 # print(openai_version)
@@ -24,12 +25,10 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 # openai.api_key = os.getenv("OPENAI_API_KEY")
 # openai.api_base = os.getenv("OPENAI_API_BASE")
 
-client = OpenAI(
-    # This is the default and can be omitted
-    organization = "azure",
-    #api_version = "2024-02-01",
-    api_key = os.getenv("OPENAI_API_KEY"),
-    base_url = os.getenv("OPENAI_API_BASE")
+client = AzureOpenAI(
+    azure_endpoint = os.getenv("OPENAI_API_BASE"), 
+    api_key = os.getenv("OPENAI_API_KEY"),  
+    api_version="2024-02-01"
 )
 app = Flask(__name__)
 

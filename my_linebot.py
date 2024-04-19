@@ -45,19 +45,8 @@ def aoai_chat_model(chat):
     messages.append({"role": "user", "content": chat})
 
     # Only send the last 5 messages to the API
-    recent_messages = messages[-5:]
+    recent_messages = messages[-10:]
 
-    # Send the recent messages to the OpenAI API and get the response
-    # response_chat = openai.ChatCompletion.create(
-    #     engine="gpt-4",
-    #     messages=recent_messages,
-    #     temperature=0.7,
-    #     max_tokens=150,
-    #     top_p=0.95,
-    #     frequency_penalty=0,
-    #     presence_penalty=0,
-    #     stop=None
-    # )
     response_chat = client.chat.completions.create(
         model="gpt4", #要用部屬名稱，不是模型名稱
         messages=[
@@ -73,10 +62,13 @@ def aoai_chat_model(chat):
         temperature=0.7
     )
 
-    # Append the assistant's response to the messages list
-    messages.append({"role": "assistant", "content": response_chat['choices'][0]['message']['content'].strip()})
+    # Access the assistant's response using the methods of the ChatCompletion class
+    assistant_message = response_chat.choices[0].message.content.strip()
 
-    return response_chat['choices'][0]['message']['content'].strip()
+    # Append the assistant's response to the messages list
+    messages.append({"role": "assistant", "content": assistant_message})
+
+    return assistant_message
 
 # Initialize Line API with access token and channel secret
 line_bot_api = LineBotApi(os.getenv('LINE_ACCESS_TOKEN'))

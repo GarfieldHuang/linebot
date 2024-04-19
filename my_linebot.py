@@ -59,7 +59,7 @@ def aoai_chat_model(chat):
     #     stop=None
     # )
     response_chat = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt4", #要用部屬名稱，不是模型名稱
         messages=[
             {
                 "role": "system",

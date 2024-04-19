@@ -35,7 +35,6 @@ app = Flask(__name__)
 # Initialize messages list with the system message
 messages = [
     {"role": "system", "content": "You are a helpful assistant . \
-                                   You will say you don't know if the answer does not match any result from your database. Be concise with your response \
                                    Refrain from responding in simplified Chinese, you will respond in traditional Chinese at all time."},
 ]
 

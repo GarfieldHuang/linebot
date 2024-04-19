@@ -67,7 +67,7 @@ def aoai_chat_model(chat):
             },
             {
                 "role": "user",
-                "content": recent_messages,
+                "content": recent_messages[-1]['content'],
             }
         ],
         temperature=0.7

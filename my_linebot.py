@@ -54,7 +54,7 @@ handler1 = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 # This route serves as a health check or landing page for the web app.
 @app.route("/")
 def mewobot():
-    return 'Cat Time!!!'
+    return '測試!!!'
 
 # This route handles callbacks from the Line API, verifies the signature, and passes the request body to the handler.
 @app.route("/callback", methods=['POST'])

@@ -47,7 +47,7 @@ def aoai_chat_model(chat):
     recent_messages = messages[-10:]
 
     response_chat = client.chat.completions.create(
-        model="gpt4", #要用部屬名稱，不是模型名稱
+        model="gpt4", #要用佈署名稱，不是模型名稱
         messages=[
             {
                 "role": "system",

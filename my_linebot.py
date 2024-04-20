@@ -32,10 +32,10 @@ client = AzureOpenAI(
 )
 app = Flask(__name__)
 
+system_prompt = "You are a helpful assistant. Refrain from responding in simplified Chinese, you will respond in traditional Chinese at all time."
 # Initialize messages list with the system message
 messages = [
-    {"role": "system", "content": "You are a helpful assistant . \
-                                   Refrain from responding in simplified Chinese, you will respond in traditional Chinese at all time."},
+    {"role": "system", "content": system_prompt},
 ]
 
 # This function takes a chat message as input, appends it to the messages list, sends the recent messages to the OpenAI API, and returns the assistant's response.
@@ -51,7 +51,7 @@ def aoai_chat_model(chat):
         messages=[
             {
                 "role": "system",
-                "content": "You are a helpful assistant. Refrain from responding in simplified Chinese, you will respond in traditional Chinese at all time."
+                "content": system_prompt
             },
             {
                 "role": "user",

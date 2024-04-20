@@ -1,36 +1,41 @@
-# my_linebot.py
+from fastapi import FastAPI, Request
+from fastapi.exceptions import HTTPException
+from fastapi.responses import PlainTextResponse
+from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
+import os
+from openai import AzureOpenAI
+import uvicorn
+from azure.storage.blob import BlobServiceClient
+
 # Create a new virtual environment
 # python -m venv env
-
 # Activate the virtual environment
 # env\Scripts\activate
 # cd .\linebot_aoai\
 # python my_linebot.py
 
-from flask import Flask, request, abort
-import os
-# import openai
-# from openai import OpenAI
-from linebot import LineBotApi, WebhookHandler
-from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
-# import pkg_resources
-from openai import AzureOpenAI
-
-# openai_version = pkg_resources.get_distribution("openai").version
-# print(openai_version)
 # Set OpenAI API details
-# openai.api_type = "azure"
-# openai.api_version = "2024-02-01"
-# openai.api_key = os.getenv("OPENAI_API_KEY")
-# openai.api_base = os.getenv("OPENAI_API_BASE")
-
 client = AzureOpenAI(
-    azure_endpoint = os.getenv("OPENAI_API_BASE"), 
-    api_key = os.getenv("OPENAI_API_KEY"),  
+    azure_endpoint=os.getenv("OPENAI_API_BASE"),
+    api_key=os.getenv("OPENAI_API_KEY"),
     api_version="2024-02-01"
 )
-app = Flask(__name__)
+
+# Create a BlobServiceClient object
+blob_service_client = BlobServiceClient.from_connection_string(os.getenv("AZURE_STORAGE_CONNECTION_STRING"))
+
+# Fetch the container
+container_name = os.getenv("AZURE_CONTAINER_NAME")
+container_client = blob_service_client.get_container_client(container_name)
+
+# Access the container properties
+container_properties = container_client.get_container_properties()
+print(f"Container name: {container_properties.name}")
+print(f"Container last modified: {container_properties.last_modified}")
+
+app = FastAPI()
 
 system_prompt = "You are a helpful assistant. Refrain from responding in simplified Chinese, you will respond in traditional Chinese at all time."
 # Initialize messages list with the system message
@@ -47,7 +52,7 @@ def aoai_chat_model(chat):
     recent_messages = messages[-10:]
 
     response_chat = client.chat.completions.create(
-        model="gpt4", #要用佈署名稱，不是模型名稱
+        model="gpt4",  # 要用佈署名稱，不是模型名稱
         messages=[
             {
                 "role": "system",
@@ -74,21 +79,21 @@ line_bot_api = LineBotApi(os.getenv('LINE_ACCESS_TOKEN'))
 handler1 = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 
 # This route serves as a health check or landing page for the web app.
-@app.route("/")
-def mewobot():
+@app.get("/")
+def linebot():
     return '測試!!!'
 
 # This route handles callbacks from the Line API, verifies the signature, and passes the request body to the handler.
-@app.route("/callback", methods=['POST'])
-def callback():
+@app.post("/callback")
+async def callback(request: Request):
     signature = request.headers['X-Line-Signature']
-    body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+    body = await request.body()
+    app.logger.info("Request body: " + body.decode())
     try:
-        handler1.handle(body, signature)
+        handler1.handle(body.decode(), signature)
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
-        abort(400)
+        raise HTTPException(status_code=400, detail="Invalid signature. Please check your channel access token/channel secret.")
     return 'OK'
 
 # This event handler is triggered when a message event is received from the Line API. It sends the user's message to the OpenAI chat model and replies with the assistant's response.
@@ -100,5 +105,4 @@ def handle_message(event):
     )
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
-    
+    uvicorn.run(app, host="0.0.0.0", port=8000)

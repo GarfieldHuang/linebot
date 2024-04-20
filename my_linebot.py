@@ -43,7 +43,7 @@ def aoai_chat_model(chat):
     # Append the user's message to the messages list
     messages.append({"role": "user", "content": chat})
 
-    # Only send the last 5 messages to the API
+    # Only send the last 10 messages to the API
     recent_messages = messages[-10:]
 
     response_chat = client.chat.completions.create(

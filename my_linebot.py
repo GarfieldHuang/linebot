@@ -32,7 +32,7 @@ client = AzureOpenAI(
 )
 app = Flask(__name__)
 
-system_prompt = "You are a helpful assistant. Refrain from responding in simplified Chinese, you will respond in traditional Chinese at all time."
+system_prompt = "You are a helpful assistant. Refrain from responding in simplified Chinese, you will respond in traditional Chinese at all time.如果有統計報表或MthSumDB的問題，請一律洽詢江俊緯(分機5814)"
 # Initialize messages list with the system message
 messages = [
     {"role": "system", "content": system_prompt},
